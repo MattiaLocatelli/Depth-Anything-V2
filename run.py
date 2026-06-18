@@ -20,6 +20,7 @@ if __name__ == '__main__':
     
     parser.add_argument('--pred-only', dest='pred_only', action='store_true', help='only display the prediction')
     parser.add_argument('--grayscale', dest='grayscale', action='store_true', help='do not apply colorful palette')
+    parser.add_argument('--save-numpy', dest='save_numpy', action='store_true', help='save the model raw output')
     
     args = parser.parse_args()
     
@@ -55,6 +56,10 @@ if __name__ == '__main__':
         raw_image = cv2.imread(filename)
         
         depth = depth_anything.infer_image(raw_image, args.input_size)
+
+        if args.save_numpy:
+            output_path = os.path.join(args.outdir, os.path.splitext(os.path.basename(filename))[0] + '_raw_depth_meter.npy')
+            np.save(output_path, depth)
         
         depth = (depth - depth.min()) / (depth.max() - depth.min()) * 255.0
         depth = depth.astype(np.uint8)
